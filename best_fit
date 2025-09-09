@@ -1,0 +1,56 @@
+#include <stdio.h>
+
+int main() {
+    int i, j, n, m;
+
+    printf("Enter number of memory blocks: ");
+    scanf("%d", &n);
+    int blockSize[n], blockAlloc[n];
+    for(i = 0; i < n; i++) {
+        printf("Enter size of block %d: ", i+1);
+        scanf("%d", &blockSize[i]);
+        blockAlloc[i] = -1; // Initially block is free
+    }
+
+    printf("Enter number of processes: ");
+    scanf("%d", &m);
+    int processSize[m];
+    for(i = 0; i < m; i++) {
+        printf("Enter size of process %d: ", i+1);
+        scanf("%d", &processSize[i]);
+    }
+
+    // Best Fit Allocation
+    for(i = 0; i < m; i++) {
+        int best = -1;
+        for(j = 0; j < n; j++) {
+            if(blockSize[j] >= processSize[i]) {
+                if(best == -1 || blockSize[j] < blockSize[best])
+                    best = j;
+            }
+        }
+        if(best != -1) {
+            blockAlloc[best] = i;
+            blockSize[best] -= processSize[i];
+        }
+    }
+
+    // Display allocation
+    printf("\nProcess No.\tProcess Size\tBlock No.\n");
+    for(i = 0; i < m; i++) {
+        printf("%d\t\t%d\t\t", i+1, processSize[i]);
+        int allocated = 0;
+        for(j = 0; j < n; j++) {
+            if(blockAlloc[j] == i) {
+                printf("%d", j+1);
+                allocated = 1;
+                break;
+            }
+        }
+        if(!allocated)
+            printf("Not Allocated");
+        printf("\n");
+    }
+
+    return 0;
+}
