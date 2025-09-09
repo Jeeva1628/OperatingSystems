@@ -1,0 +1,71 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_BLOCKS 50
+
+struct Block {
+    int blockNo;
+    struct Block *next;
+};
+
+struct File {
+    char name[20];
+    struct Block *start;
+    struct Block *end;
+};
+
+int disk[MAX_BLOCKS]; // 0 = free, 1 = allocated
+
+struct Block* createBlock(int bno) {
+    struct Block *newBlock = (struct Block*)malloc(sizeof(struct Block));
+    newBlock->blockNo = bno;
+    newBlock->next = NULL;
+    return newBlock;
+}
+
+int main() {
+    struct File file;
+    int n, i, bno;
+
+    for (i = 0; i < MAX_BLOCKS; i++) disk[i] = 0; // initialize all free
+
+    printf("Enter file name: ");
+    scanf("%s", file.name);
+    file.start = file.end = NULL;
+
+    printf("Enter number of blocks required: ");
+    scanf("%d", &n);
+
+    printf("Enter block numbers to allocate (0-%d): ", MAX_BLOCKS-1);
+    for (i = 0; i < n; i++) {
+        scanf("%d", &bno);
+        if (bno < 0 || bno >= MAX_BLOCKS) {
+            printf("Invalid block number!\n");
+            i--; continue;
+        }
+        if (disk[bno] == 1) {
+            printf("Block %d already allocated, choose another.\n", bno);
+            i--; continue;
+        }
+        disk[bno] = 1; // allocate block
+
+        struct Block *newBlock = createBlock(bno);
+        if (file.start == NULL) {
+            file.start = file.end = newBlock;
+        } else {
+            file.end->next = newBlock;
+            file.end = newBlock;
+        }
+    }
+
+    // Display file allocation
+    printf("\nFile %s allocated in blocks: ", file.name);
+    struct Block *temp = file.start;
+    while (temp != NULL) {
+        printf("%d -> ", temp->blockNo);
+        temp = temp->next;
+    }
+    printf("NULL\n");
+
+    return 0;
+}
