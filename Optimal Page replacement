@@ -1,0 +1,51 @@
+#include <stdio.h>
+
+int predict(int ref[], int frames[], int n, int index, int f) {
+    int res = -1, farthest = index, i, j;
+    for (i = 0; i < f; i++) {
+        for (j = index; j < n; j++) {
+            if (frames[i] == ref[j]) {
+                if (j > farthest) {
+                    farthest = j;
+                    res = i;
+                }
+                break;
+            }
+        }
+        if (j == n) return i; // never used again
+    }
+    return (res == -1) ? 0 : res;
+}
+
+int main() {
+    int frames[10], ref[30], n, f, i, j, faults = 0, k = 0;
+
+    printf("Enter number of frames: ");
+    scanf("%d", &f);
+    printf("Enter length of reference string: ");
+    scanf("%d", &n);
+    printf("Enter reference string: ");
+    for (i = 0; i < n; i++) scanf("%d", &ref[i]);
+
+    for (i = 0; i < f; i++) frames[i] = -1;
+
+    for (i = 0; i < n; i++) {
+        int flag = 0;
+        for (j = 0; j < f; j++) if (frames[j] == ref[i]) { flag = 1; break; }
+
+        if (!flag) {
+            if (k < f) frames[k++] = ref[i];
+            else {
+                int pos = predict(ref, frames, n, i + 1, f);
+                frames[pos] = ref[i];
+            }
+            faults++;
+        }
+
+        printf("Frames: ");
+        for (j = 0; j < f; j++) printf("%d ", frames[j]);
+        printf("\n");
+    }
+    printf("Total Page Faults = %d\n", faults);
+    return 0;
+}
